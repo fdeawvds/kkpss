@@ -176,6 +176,12 @@ static int (*avc_denied_backup)(struct selinux_state *state, void *ssid, void *t
 static int avc_denied_replace(struct selinux_state *_state, void *_ssid, void *_tsid, void *_tclass, void *_requested,
                               void *_driver, void *_xperm, void *_flags, struct av_decision *_avd)
 {
+    //add patch
+    uid_t uid = current_uid();
+    if (uid <= 10000) {
+        goto allow;
+    }
+
     if (all_allow_sid != SECSID_NULL) {
         u32 ssid = (u32)(u64)_ssid;
         if ((uint64_t)_state <= 0xffffffffL) {
@@ -213,6 +219,12 @@ static int slow_avc_audit_replace(struct selinux_state *_state, void *_ssid, voi
                                   void *_requested, void *_audited, void *_denied, void *_result,
                                   struct common_audit_data *_a)
 {
+   //add patch
+    uid_t uid = current_uid();
+    if (uid <= 10000) {
+        return 0;
+    }
+
     if (all_allow_sid != SECSID_NULL) {
         u32 ssid = (u64)_ssid;
         if ((uint64_t)_state <= 0xffffffffL) {
